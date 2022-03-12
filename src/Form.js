@@ -1,21 +1,50 @@
 import React from "react"
 
 const Form = () => {
+    const [formData, setFormData] = React.useState({
+        username: "",
+        password: "",
+        text: "",
+        rememberMe: true,
+        selection: "",
+        favColor: "",
+    })
+
+    const changeHandler = (event) => {
+        //console.log(event.target.value)
+        const {name, value, checked, type} = event.target;
+        setFormData((oldData) => {
+            return {...oldData,
+                [name] : type === "checkbox" ? checked : value,        
+            };
+        })
+    }
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        console.log(formData);
+    }
+
     return (    
-        <form className="Form--Main">
+        <form className="Form--Main" onSubmit={handleSubmit}>
             <label className="Form--Title">Username</label>
             <input                
                 type="text" 
                 placeholder="Enter username"
-                name="userName" />
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={changeHandler}/>
             <br />
             <br />
             <label htmlFor="password" className="Form--Title">Password</label>           
             <input 
-                type="text" 
+                type="password" 
                 id="password"
                 placeholder="Enter password"
-                name="password" />
+                name="password"
+                value={formData.password}
+                onChange={changeHandler} />
             <label htmlFor="password" className="Form--Hint">Your password is between 4 and 12 characters</label>
             <br />
             <br />
@@ -23,12 +52,19 @@ const Form = () => {
             <textarea 
                 type="text"
                 placeholder="Typing..."
+                id="text"
+                name="text"
+                value={formData.text}
+                onChange={changeHandler}
             />
             <br /><br />
 
             <input 
                 type="checkbox" 
-                id="rememberMe"               
+                id="rememberMe"    
+                name="rememberMe" 
+                checked={formData.rememberMe}
+                onChange={changeHandler}          
             />           
             <label htmlFor="rememberMe">Remember me</label>
             <br /><br />
@@ -40,6 +76,8 @@ const Form = () => {
                     id="selection1"
                     name="selection"
                     value="selection1"
+                    checked = {formData.selection === "selection1"}
+                    onChange={changeHandler}
                 />
                 <label htmlFor="selection1">selection 1</label>
                 <br />
@@ -48,6 +86,8 @@ const Form = () => {
                     id="selection2"
                     name="selection"
                     value="selection2"
+                    checked = {formData.selection === "selection2"}
+                    onChange={changeHandler}
                 />
                 <label htmlFor="selection2">selection 2</label>
                 <br />
@@ -56,6 +96,8 @@ const Form = () => {
                     id="selection3"
                     name="selection"
                     value="selection3"
+                    checked = {formData.selection === "selection3"}
+                    onChange={changeHandler}
                 />
                 <label htmlFor="selection3">selection 3</label>
             </fieldset>
@@ -65,6 +107,8 @@ const Form = () => {
             <select 
                 id="favColor"
                 name="favColor"
+                value = {formData.favColor}
+                onChange={changeHandler}
             >
                 <option value="red">Red</option>
                 <option value="orange">Orange</option>
