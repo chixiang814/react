@@ -4,14 +4,13 @@ import  Container from './components/Container';
 
 function App() {
 
-  const singlePlayerMode = true;
-
   const initialState = _ => ([...Array(9)].map((i, index) => ({
     id: index,
     set: false,
     isCross: true
  })))
 
+const [singlePlayerMode, setMode] = React.useState(true);
 const [win, setWin] = React.useState(false);
 const [states, setStates] = React.useState(initialState());
 const [crossPlayer, togglePlayer] = React.useState(true);
@@ -48,15 +47,35 @@ const checkIfWin = () => {
     return false;
 }
 
-React.useEffect(checkIfWin,[crossPlayer])
+React.useEffect(checkIfWin,[states])
 
 const clickHandler = (index) => {
    if (states[index].set) return;
    
+   if(singlePlayerMode) {
+    const unchecks = states.filter((s) => !s.set && s.id !==index)
+    const randomIndex = unchecks[Math.floor(Math.random() * unchecks.length)].id;
+    console.log(randomIndex)
+    setStates((oldStates)=>
+      (oldStates.map((oldState) => 
+          {
+              return randomIndex === oldState.id ? {
+                          ...oldState,
+                          set: true,
+                          isCross: !crossPlayer
+                      } : index === oldState.id ? {
+                        ...oldState,
+                        set: true,
+                        isCross: crossPlayer
+                    } : oldState
+          }))
+    );
+
+  } else {
     setStates((oldStates)=>
         (oldStates.map((oldState) => 
             {
-                return index == oldState.id ? {
+                return index === oldState.id ? {
                             ...oldState,
                             set: true,
                             isCross: crossPlayer
@@ -65,17 +84,32 @@ const clickHandler = (index) => {
     );
       
     togglePlayer((player)=>!player)
-} 
+    }
+            
+
+  } 
 
 const restartGame = _ => {
     setWin(false);
     setStates(()=>initialState())
     setWinBoxes([]);
 }
-  
+
+const setModeHandler = (value) => {
+    setWin(false);
+    setStates(()=>initialState())
+    setWinBoxes([]);
+    setMode(value)
+}
+
   return (
     <div className="App">
       <h1>Tic Tac Toe</h1>
+      <div>
+        <input type="radio"  value="single" name="mode" checked={singlePlayerMode} onChange={_=>setModeHandler(true)} /> Single Player
+        <input type="radio"  value="multi" name="mode" checked={!singlePlayerMode}  onChange={_=>setModeHandler(false)}/> MultiPlayer
+      </div>
+      { !singlePlayerMode && <p> {crossPlayer ? "X" : "O"} turns...</p>}
       { win && <div>You win</div>}
       <Container 
           win={win}
